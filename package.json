@@ -16,10 +16,11 @@
     "slide": "~1.1.5"
   },
   "devDependencies": {
-    "jostle": "~0.1.1",
     "blanket": "~1.1.6",
+    "jostle": "~0.1.1",
     "mocha": "~1.18.2",
     "should": "~4.0.1",
+    "socket.io": "~1.0.4",
   },
   "scripts": {
     "test": "mocha -R spec",
