@@ -1,0 +1,21 @@
+dean - a sticky session load balancer
+
+  usage: dean [options] [command]
+
+  options:
+    -h, --help                  show help and usage
+    -v, --version               show version
+    -p, --port <port>           set port
+    -b, --bind-address <ip>     set bind address
+    -w, --workers <count>       set number of workers
+    -j, --json                  output in json
+    -k, --key <key>             set session key
+
+  commands:
+    start                       start the server
+    repl                        connect via the repl
+    add <port> [host]           add a drone
+    remove <port> [host]        remove a drone
+    show                        show drones
+    help                        show help and usage
+

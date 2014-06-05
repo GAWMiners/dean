@@ -1,0 +1,54 @@
+{
+  "name": "dean",
+  "version": "0.0.0",
+  "description": "Proxy routing table with cluster support",
+  "main": "index.js",
+  "dependencies": {
+    "archy": "0.0.2",
+    "clache": "~0.0.1",
+    "cluster-master": "~0.2.0",
+    "cookie": "~0.1.2",
+    "http-proxy": "~1.1.4",
+    "jade": "~1.3.1",
+    "nopt": "~2.2.1",
+    "npmlog": "0.0.6",
+    "redis": "~0.10.3",
+    "slide": "~1.1.5"
+  },
+  "devDependencies": {
+    "jostle": "~0.1.1",
+    "blanket": "~1.1.6",
+    "mocha": "~1.18.2",
+    "should": "~3.3.1"
+  },
+  "scripts": {
+    "test": "mocha -R spec",
+    "cover": "mocha -r blanket -R json-cov | jostle",
+    "circle": "mkdir -p $CIRCLE_ARTIFACTS && mocha -r blanket -R html-cov > $CIRCLE_ARTIFACTS/coverage.html"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "/lib/",
+      "data-cover-never": "node_modules"
+    }
+  },
+  "bin": {
+    "dean": "./bin/cmd.js"
+  },
+  "license": "MIT",
+  "keywords": [
+    "proxy",
+    "router",
+    "table",
+    "cluster"
+  ],
+  "author": "Evan Lucas <evan@gawlabs.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GAWMiners/dean"
+  },
+  "homepage": "https://github.com/GAWMiners/dean",
+  "bugs": {
+    "url": "https://github.com/GAWMiners/dean/issues"
+  }
+}
