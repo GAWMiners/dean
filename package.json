@@ -1,6 +1,6 @@
 {
   "name": "dean",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Proxy routing table with cluster support",
   "main": "index.js",
   "dependencies": {
