@@ -28,6 +28,7 @@
   "scripts": {
     "test": "mocha -R spec",
     "cover": "mocha -r blanket -R json-cov | jostle",
+    "cover-html": "mocha -r blanket -R html-cov > coverage.html",
     "circle": "mkdir -p $CIRCLE_ARTIFACTS && mocha -r blanket -R html-cov > $CIRCLE_ARTIFACTS/coverage.html"
   },
   "config": {
