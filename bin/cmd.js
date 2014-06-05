@@ -193,7 +193,8 @@ function startRepl() {
 function addDrone(args) {
   var client = redis.createClient()
   if (!args.length) {
-    // return error
+    log.error('[add drone]', 'drone is required (ex. 0.0.0.0:4040)')
+    process.exit(1)
   }
   var drone
   var port = +args[0]
@@ -213,7 +214,8 @@ function addDrone(args) {
 function removeDrone(args) {
   var client = redis.createClient()
   if (!args.length) {
-    // return error
+    log.error('[remove drone]', 'drone is required (ex. 0.0.0.0:4040)')
+    process.exit(1)
   }
 
   var drone
