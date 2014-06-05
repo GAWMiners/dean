@@ -18,4 +18,3 @@ dean - a sticky session load balancer
     remove <port> [host]        remove a drone
     show                        show drones
     help                        show help and usage
-
