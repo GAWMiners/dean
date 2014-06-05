@@ -40,6 +40,13 @@
   "bin": {
     "dean": "./bin/cmd.js"
   },
+  "docs": {
+    "token": "ca1a2feb220cc3f7e4cf02228ca08f87b102cc83",
+    "includes": [
+      "lib/index.js"
+    ],
+    "install": "$ npm install -g dean"
+  },
   "license": "MIT",
   "keywords": [
     "proxy",
