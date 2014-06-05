@@ -139,6 +139,7 @@ function startServer() {
 
   sub.on('message', function(channel, msg) {
     if (channel === 'dean') {
+      // TODO: try/catch
       msg = JSON.parse(msg.toString())
       if (msg && msg.command === 'add') {
         drones.push(msg.drone)
@@ -158,7 +159,7 @@ function startServer() {
   var port = parsed.port || 8040
   var ba = parsed['bind-address'] || '0.0.0.0'
   var key = parsed.key || 'connect.sid'
-  config.args = [port, ba, key]
+  config.args = [JSON.stringify(parsed)]
 
   var clusterMaster = require('cluster-master')
   clusterMaster(config)
