@@ -259,17 +259,22 @@ function showDrones() {
 
       return set
     }, {})
-    var s = archy({
-      label: 'drones'
-    , nodes: Object.keys(drones).map(function(drone) {
-        return {
-          label: drone
-        , nodes: drones[drone]
-        }
+    if (parsed.json) {
+      console.log(JSON.stringify(drones))
+      done()
+    } else {
+      var s = archy({
+        label: 'drones'
+      , nodes: Object.keys(drones).map(function(drone) {
+          return {
+            label: drone
+          , nodes: drones[drone]
+          }
+        })
       })
-    })
-    console.log(s)
-    done()
+      console.log(s)
+      done()
+    }
   })
 }
 
