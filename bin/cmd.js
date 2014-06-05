@@ -122,6 +122,13 @@ function startServer() {
       , drones: drones
       })
     })
+
+    cluster.on('fork', function(worker) {
+      worker.send({
+        message: 'drones'
+      , drones: drones
+      })
+    })
   })
 
   function handle(err) {
