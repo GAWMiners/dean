@@ -4,7 +4,6 @@ var Dean = require('../')
   , io = require('socket.io')
   , ioc = require('socket.io-client')
   , debug = require('debug')('dean:test')
-  , request = require('request')
   , redis = require('redis')
 
 describe('dean', function() {
@@ -133,8 +132,10 @@ describe('dean', function() {
       dean.addDrone(45645)
 
       dean.listen(function() {
-        request.get('http://localhost:8040')
-          .on('error', function() {})
+        http.request({
+          port: 8040
+        }).on('error', function() {})
+          .end()
       })
     })
   })
