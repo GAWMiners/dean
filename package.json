@@ -21,6 +21,7 @@
     "mocha": "~1.18.2",
     "should": "~4.0.1",
     "socket.io": "~1.0.4",
+    "socket.io-client": "~1.0.4"
   },
   "scripts": {
     "test": "mocha -R spec",
