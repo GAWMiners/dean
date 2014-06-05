@@ -16,6 +16,7 @@ var fs = require('fs')
                 , workers: Number
                 , json: Boolean
                 , key: String
+                , 'max-sockets': Number
                 }
   , shortHand = { verbose: ['--loglevel', 'verbose']
                 , h: ['--help']
@@ -25,6 +26,7 @@ var fs = require('fs')
                 , w: ['--workers']
                 , j: ['--json']
                 , k: ['--key']
+                , s: ['--max-sockets']
                 }
   , parsed = nopt(knownOpts, shortHand)
 
