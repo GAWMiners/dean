@@ -8,4 +8,3 @@ test:
     - npm test
     - npm run cover
     - npm run circle
-
