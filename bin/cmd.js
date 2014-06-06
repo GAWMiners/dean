@@ -274,10 +274,7 @@ function showDrones() {
       log.error('[drones]', 'error fetching drones', err)
       process.exit(1)
     }
-    if (!drones.length) {
-      log.info('[drones]', 'no drones registered')
-      return done()
-    }
+    drones = drones || []
     drones = drones.reduce(function(set, drone) {
       var splits = drone.split(':')
       var host = splits[0]
@@ -294,6 +291,10 @@ function showDrones() {
       console.log(JSON.stringify(drones))
       done()
     } else {
+      if (!drones.length) {
+        log.info('[drones]', 'no drones registered')
+        return done()
+      }
       var s = archy({
         label: 'drones'
       , nodes: Object.keys(drones).map(function(drone) {
