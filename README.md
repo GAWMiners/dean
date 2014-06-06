@@ -37,6 +37,7 @@ _opts_ can contain the following:
 | port | The listening port (`8040`) |
 | timeout | Proxy timeout (`0`) |
 | max-sockets | Max number of sockets for the http agent |
+| redis | Object containing redis options (`port`, `host`, `socket`, `db`) |
 
 ##### Params
 | Name | Type(s) | Description |

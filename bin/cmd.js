@@ -8,6 +8,7 @@ var fs = require('fs')
   , redis = require('redis')
   , Clache = require('clache')
   , archy = require('archy')
+  , utils = require('../lib/utils')
   , knownOpts = { loglevel: ['verbose', 'warn', 'error', 'info', 'silent']
                 , help: Boolean
                 , version: Boolean
@@ -17,6 +18,11 @@ var fs = require('fs')
                 , json: Boolean
                 , key: String
                 , 'max-sockets': Number
+                , 'redis-db': Number
+                , 'redis-host': String
+                , 'redis-port': Number
+                , 'redis-path': path
+                , 'redis-auth': String
                 }
   , shortHand = { verbose: ['--loglevel', 'verbose']
                 , h: ['--help']
@@ -83,6 +89,17 @@ if (args.length) {
   return
 }
 
+function redis_opts() {
+  var opts = {
+    host: parsed['redis-host'] || '127.0.0.1'
+  , port: parsed['redis-port'] || 6379
+  }
+  if (parsed['redis-db']) opts.db = parsed['redis-db']
+  if (parsed['redis-path']) opts.socket = parsed['redis-path']
+  if (parsed['redis-auth']) opts.password = parsed['redis-auth']
+  return opts
+}
+
 function exit(code, pub, sub) {
   if (sub) {
     sub.unsubscribe()
@@ -99,9 +116,31 @@ function startServer() {
     size: parsed.workers || 1
   }
 
-  var cache = new Clache()
-  var sub = redis.createClient()
-  sub.subscribe('dean')
+  var redisOpts = redis_opts()
+  var cache, sub
+  var cache = new Clache(redisOpts)
+  utils.redisClient({
+    redis: redisOpts
+  }, function(err, client) {
+    sub = client
+    sub.subscribe('dean')
+    sub.on('message', function(channel, msg) {
+      if (channel === 'dean') {
+        // TODO: try/catch
+        msg = JSON.parse(msg.toString())
+        if (msg && msg.command === 'add') {
+          drones.push(msg.drone)
+          cache.set('dean_drones', drones, handle)
+        } else if (msg && msg.command === 'remove') {
+          var idx = drones.indexOf(msg.drone)
+          if (~idx) {
+            drones.splice(idx, 1)
+          }
+          cache.set('dean_drones', drones, handle)
+        }
+      }
+    })
+  })
   var drones
 
   function eachWorker(cb) {
@@ -136,23 +175,6 @@ function startServer() {
       log.error('[drones]', 'error setting drones', err)
     }
   }
-
-  sub.on('message', function(channel, msg) {
-    if (channel === 'dean') {
-      // TODO: try/catch
-      msg = JSON.parse(msg.toString())
-      if (msg && msg.command === 'add') {
-        drones.push(msg.drone)
-        cache.set('dean_drones', drones, handle)
-      } else if (msg && msg.command === 'remove') {
-        var idx = drones.indexOf(msg.drone)
-        if (~idx) {
-          drones.splice(idx, 1)
-        }
-        cache.set('dean_drones', drones, handle)
-      }
-    }
-  })
 
   config.exec = worker
   config.repl = socket_addr
@@ -192,49 +214,57 @@ function startRepl() {
 }
 
 function addDrone(args) {
-  var client = redis.createClient()
   if (!args.length) {
     log.error('[add drone]', 'drone is required (ex. 0.0.0.0:4040)')
     process.exit(1)
   }
-  var drone
-  var port = +args[0]
-  if (isNaN(port)) drone = args[0]
-  else drone = '0.0.0.0:'+args[0]
-  log.info('adding drone', drone)
-  client.publish('dean', JSON.stringify({
-    command: 'add'
-  , drone: drone
-  }))
-  setTimeout(function() {
-    client.quit()
-    process.exit()
-  }, 1200)
+
+  var opts = {
+    redis: redis_opts()
+  }
+  utils.redisClient(opts, function(err, client) {
+    var drone
+    var port = +args[0]
+    if (isNaN(port)) drone = args[0]
+    else drone = '0.0.0.0:'+args[0]
+    log.info('adding drone', drone)
+    client.publish('dean', JSON.stringify({
+      command: 'add'
+    , drone: drone
+    }))
+    setTimeout(function() {
+      client.quit()
+      process.exit()
+    }, 1200)
+  })
 }
 
 function removeDrone(args) {
-  var client = redis.createClient()
   if (!args.length) {
     log.error('[remove drone]', 'drone is required (ex. 0.0.0.0:4040)')
     process.exit(1)
   }
-
-  var drone
-  var port = +args[0]
-  if (isNaN(port)) drone = args[0]
-  else drone = '0.0.0.0:'+args[0]
-  client.publish('dean', JSON.stringify({
-    command: 'remove'
-  , drone: drone
-  }))
-  setTimeout(function() {
-    client.quit()
-    process.exit()
-  }, 1200)
+  var opts = {
+    redis: redis_opts()
+  }
+  utils.redisClient(opts, function(err, client) {
+    var drone
+    var port = +args[0]
+    if (isNaN(port)) drone = args[0]
+    else drone = '0.0.0.0:'+args[0]
+    client.publish('dean', JSON.stringify({
+      command: 'remove'
+    , drone: drone
+    }))
+    setTimeout(function() {
+      client.quit()
+      process.exit()
+    }, 1200)
+  })
 }
 
 function showDrones() {
-  var client = new Clache()
+  var client = new Clache(redis_opts())
 
   function done() {
     process.exit()
