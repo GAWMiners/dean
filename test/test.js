@@ -5,6 +5,7 @@ var Dean = require('../')
   , ioc = require('socket.io-client')
   , debug = require('debug')('dean:test')
   , redis = require('redis')
+  , utils = require('../lib/utils')
 
 describe('dean', function() {
   describe('proxy', function() {
@@ -236,6 +237,94 @@ describe('dean', function() {
 
           dean.addDrone(drone)
 
+        })
+      })
+    })
+  })
+
+  describe('utils', function() {
+    describe('parseCookies', function() {
+      it('should return empty object for empty string', function() {
+        var res = utils.parseCookies('')
+        res.should.be.type('object')
+        Object.keys(res).should.have.length(0)
+      })
+
+      it('should return an object if only a string is passed', function() {
+        var res = utils.parseCookies('foo=bar; cat=meow; dog=ruff;')
+        res.should.be.type('object')
+        res.should.have.property('foo', 'bar')
+        res.should.have.property('cat', 'meow')
+        res.should.have.property('dog', 'ruff')
+      })
+
+      it('should return a string if a string and a key are passed', function() {
+        var res = utils.parseCookies('foo=bar; cat=meow; dog=ruff;', 'dog')
+        res.should.be.type('string')
+        res.should.equal('ruff')
+      })
+    })
+
+    describe('redisClient', function() {
+      var testDb = 15
+      it('should work with a custom redisClient', function(done) {
+        var client = redis.createClient()
+        utils.redisClient({
+          redisClient: client
+        }, function(err, client) {
+          if (err) return done(err)
+          should.exist(client)
+          done()
+        })
+      })
+
+      it('should work with a unix domain socket', function(done) {
+        utils.redisClient({
+          redis: {
+            socket: '/tmp/redis.sock'
+          }
+        }, function(err, client) {
+          if (err) return done(err)
+          should.exist(client)
+          done()
+        })
+      })
+
+      // not really any way to test this without
+      // manually configuring the server to require a pass
+      it.skip('should work with a password', function(done) {
+        var client = redis.createClient()
+        client.send_command( 'config'
+                           , ['set', 'requirepass', 'test']
+                           , function(err, res) {
+          if (err) return done(err)
+          utils.redisClient({
+            redis: { password: 'test' }
+          }, function(err, client) {
+            if (err) return done(err)
+            should.exist(client)
+            fix(client)
+          })
+        })
+
+        function fix(client) {
+          client.send_command( 'config'
+                             , ['set', 'requirepass', '']
+                             , function(err, res) {
+            if (err) return done(err)
+            done()
+          })
+        }
+      })
+
+      it('should allow selecting the db', function(done) {
+        utils.redisClient({
+          redis: { db: 3 }
+        }, function(err, client) {
+          if (err) return done(err)
+          should.exist(client.selected_db, 'client should have selected db 3')
+          client.selected_db.should.equal(3)
+          done()
         })
       })
     })
