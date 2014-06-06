@@ -39,6 +39,10 @@ _opts_ can contain the following:
 | max-sockets | Max number of sockets for the http agent |
 | redis | Object containing redis options (`port`, `host`, `socket`, `db`) |
 
+**redis note**: the `redis` key can also contain a `redisClient`. This
+should be an instance of `redis.createClient`. `redis.socket` will
+take priority over `redis.host` and `redis.port`.
+
 ##### Params
 | Name | Type(s) | Description |
 | ---- | ------- | ----------- |
