@@ -19,6 +19,7 @@ describe('dean', function() {
 
       this.dean = Dean({
         key: 'connect.sid'
+      , trace: require('jstrace')
       })
 
       var self = this
@@ -118,6 +119,7 @@ describe('dean', function() {
       this.timeout(15000)
       var dean = new Dean({
         timeout: 5
+      , trace: require('jstrace')
       })
       dean.on('proxyError', function(err) {
         debug('proxyError %j', err)
@@ -143,7 +145,9 @@ describe('dean', function() {
 
   describe('drones', function() {
     it('can add a drone with just a port as a number', function(done) {
-      var dean = Dean()
+      var dean = Dean({
+        trace: require('jstrace')
+      })
       dean.listen(function() {
         dean.addDrone(5777)
         dean.drones.should.containEql('0.0.0.0:5777')
@@ -152,7 +156,9 @@ describe('dean', function() {
     })
 
     it('can add a drone with just a port as a string', function(done) {
-      var dean = Dean()
+      var dean = Dean({
+        trace: require('jstrace')
+      })
       dean.listen(function() {
         dean.addDrone('5777')
         dean.drones.should.containEql('0.0.0.0:5777')
@@ -182,7 +188,9 @@ describe('dean', function() {
     })
 
     it('can remove a drone', function(done) {
-      var dean = Dean()
+      var dean = Dean({
+        trace: require('jstrace')
+      })
       dean.listen(function() {
         var drone = '0.0.0.0:4567'
         dean.addDrone(drone)
