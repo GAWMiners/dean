@@ -38,6 +38,7 @@ _opts_ can contain the following:
 | timeout | Proxy timeout (`0`) |
 | max-sockets | Max number of sockets for the http agent |
 | redis | Object containing redis options (`port`, `host`, `socket`, `db`) |
+| trace | `jstrace` instance |
 
 **redis note**: the `redis` key can also contain a `redisClient`. This
 should be an instance of `redis.createClient`. `redis.socket` will
@@ -139,3 +140,31 @@ dean.removeDrone('0.0.0.0:4043')
 
 
 ***
+## Instrumentation
+
+Instrumentation is optional via [jstrace](https://github.com/jstrace/jstrace).
+
+The following probes are exposed:
+
+- `dean:proxy:web:start`
+  - `target` will be the request's target
+  - `method` will be the request method
+  - `url` will be the request url
+- `dean:proxy:web:end`
+  - `target` will be the request's target
+  - `method` will be the request method
+  - `url` will be the request url
+  - `duration` will be the duration of the request in ms
+- `dean:drone:add`
+  - `drone` will be the added drone
+- `dean:drone:remove`
+  - `drone` will be the removed drone
+
+An example script has been provided at `./scripts/trace.js`. To test it out:
+
+```bash
+$ jstrace ./scripts/trace.js
+
+# Then in another terminal
+$ npm test
+```
