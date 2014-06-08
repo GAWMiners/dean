@@ -21,6 +21,7 @@
     "blanket": "~1.1.6",
     "chalk": "~0.4.0",
     "jostle": "~0.1.1",
+    "jstrace": "~0.3.0",
     "mocha": "~1.18.2",
     "should": "~4.0.1",
     "socket.io": "~1.0.4",
