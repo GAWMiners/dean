@@ -38,6 +38,7 @@ _opts_ can contain the following:
 | timeout | Proxy timeout (`0`) |
 | max-sockets | Max number of sockets for the http agent |
 | redis | Object containing redis options (`port`, `host`, `socket`, `db`) |
+| trace | `jstrace` instance |
 
 **redis note**: the `redis` key can also contain a `redisClient`. This
 should be an instance of `redis.createClient`. `redis.socket` will
