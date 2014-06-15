@@ -32,9 +32,10 @@ _opts_ can contain the following:
 
 | Key | Description |
 | --- | ----- |
-| key | The session id (`connect.sid`) |
+| key | The session id (`connect.sid`) _can also pass session-key_ |
 | bindAddress | The ip to bind (`0.0.0.0`) |
 | port | The listening port (`8040`) |
+| https | https options (`key`, `cert`) |
 | timeout | Proxy timeout (`0`) |
 | max-sockets | Max number of sockets for the http agent |
 | redis | Object containing redis options (`port`, `host`, `socket`, `db`) |

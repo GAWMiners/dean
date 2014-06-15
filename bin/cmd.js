@@ -16,13 +16,16 @@ var fs = require('fs')
                 , 'bind-address': String
                 , workers: Number
                 , json: Boolean
-                , key: String
+                , 'session-key': String
                 , 'max-sockets': Number
                 , 'redis-db': Number
                 , 'redis-host': String
                 , 'redis-port': Number
                 , 'redis-path': path
                 , 'redis-auth': String
+                , https: Boolean
+                , 'https-cert': path
+                , 'https-key': path
                 }
   , shortHand = { verbose: ['--loglevel', 'verbose']
                 , h: ['--help']
@@ -31,8 +34,12 @@ var fs = require('fs')
                 , b: ['--bind-address']
                 , w: ['--workers']
                 , j: ['--json']
-                , k: ['--key']
+                , k: ['--session-key']
+                , key: ['--session-key']
                 , s: ['--max-sockets']
+                , H: ['--https']
+                , c: ['--https-cert']
+                , K: ['--https-key']
                 }
   , parsed = nopt(knownOpts, shortHand)
 
@@ -180,7 +187,7 @@ function startServer() {
   config.repl = socket_addr
   var port = parsed.port || 8040
   var ba = parsed['bind-address'] || '0.0.0.0'
-  var key = parsed.key || 'connect.sid'
+  var key = parsed['session-key'] || 'connect.sid'
   config.args = [JSON.stringify(parsed)]
 
   var clusterMaster = require('cluster-master')
