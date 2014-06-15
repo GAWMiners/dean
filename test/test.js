@@ -1,3 +1,4 @@
+require('https').globalAgent.options.rejectUnauthorized = false
 var Dean = require('../')
   , should = require('should')
   , http = require('http')
@@ -6,8 +7,132 @@ var Dean = require('../')
   , debug = require('debug')('dean:test')
   , redis = require('redis')
   , utils = require('../lib/utils')
+  , fs = require('fs')
+  , path = require('path')
+
+var httpsKey = fs.readFileSync(path.join(__dirname, 'fixtures', 'key.pem'))
+var httpsCert = fs.readFileSync(path.join(__dirname, 'fixtures', 'cert.pem'))
+var httpsOpts = {
+  key: httpsKey
+, cert: httpsCert
+}
+
+var sioOpts = {
+  forceNew: true
+, transports: ['websocket']
+}
 
 describe('dean', function() {
+  describe('proxy https', function() {
+    beforeEach(function(done) {
+      var count = 0
+
+      function next() {
+        count++
+        if (count === 2) done()
+      }
+
+      this.dean = Dean({
+        key: 'connect.sid'
+      , https: httpsOpts
+      , trace: require('jstrace')
+      })
+
+      var self = this
+
+      this.server1 = require('./fixtures/server')()
+      this.server2 = require('./fixtures/server')()
+      this.io1 = io(this.server1)
+      this.io2 = io(this.server2)
+      this.server1.listen(0, function() {
+        this.port1 = this.server1.address().port
+        debug('starting server 1 on port %d', this.port1)
+        this.dean.addDrone('0.0.0.0:'+this.port1)
+        next()
+      }.bind(this))
+      this.server2.listen(0, function() {
+        this.port2 = this.server2.address().port
+        debug('starting server 2 on port %d', this.port2)
+        this.dean.addDrone('0.0.0.0:'+this.port2)
+        next()
+      }.bind(this))
+
+      this.io1.sockets.on('connection', function(socket) {
+        socket.on('here', function(data) {
+          socket.emit('test', self.port1)
+        })
+      })
+
+      this.io2.sockets.on('connection', function(socket) {
+        socket.on('here', function(data) {
+          socket.emit('test', self.port2)
+        })
+      })
+    })
+
+    afterEach(function(done) {
+      var count = 0
+      function next() {
+        count++
+        if (count === 3) done()
+      }
+      this.server1.close(next)
+      this.server2.close(next)
+      this.dean.close(next)
+    })
+
+    it('should work with websockets', function(done) {
+      this.timeout(10000)
+      this.dean.listen(function() {
+        var socket = ioc('https://localhost:'+this.dean.port, sioOpts)
+        socket.on('connect_error', function(err) {
+          console.log(err)
+        })
+
+        socket.on('reconnect_error', function(err) {
+          console.log(err)
+        })
+        var self = this
+        setTimeout(function() {
+          socket.emit('here')
+        }, 600)
+
+        socket.on('connect_error', function(err) {
+          console.log('connect_error', err)
+        })
+
+        socket.on('test', function(data) {
+          var r = new RegExp(self.port1+'|'+self.port2)
+          data.should.match(r)
+          socket.disconnect()
+          done()
+        })
+      }.bind(this))
+    })
+
+    it('should allow specifying port in listen', function(done) {
+      this.timeout(5000)
+      this.dean.listen(8045, function() {
+        var socket = ioc('https://localhost:'+this.dean.port, sioOpts)
+        var self = this
+        setTimeout(function() {
+          socket.emit('here')
+        }, 600)
+
+        socket.on('connect_error', function(err) {
+          console.log('connect_error', err)
+        })
+
+        socket.on('test', function(data) {
+          var r = new RegExp(self.port1+'|'+self.port2)
+          data.should.match(r)
+          socket.disconnect()
+          done()
+        })
+      }.bind(this))
+    })
+  })
+
   describe('proxy', function() {
     beforeEach(function(done) {
       var count = 0
@@ -139,6 +264,32 @@ describe('dean', function() {
           port: 8040
         }).on('error', function() {})
           .end()
+      })
+    })
+  })
+
+  describe('https', function() {
+    it('should throw error if no key is provided', function() {
+      (function() {
+        var dean = Dean({
+          https: {}
+        })
+      }).should.throw('https.key is required')
+    })
+
+    it('should throw error if no cert is provided', function() {
+      (function() {
+        var dean = Dean({
+          https: {
+            key: 'blah'
+          }
+        }).should.throw('https.cert is required')
+      })
+    })
+
+    it('should work with key and cert', function() {
+      var dean = Dean({
+        https: httpsOpts
       })
     })
   })

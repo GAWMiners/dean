@@ -23,6 +23,9 @@ var fs = require('fs')
                 , 'redis-port': Number
                 , 'redis-path': path
                 , 'redis-auth': String
+                , https: Boolean
+                , 'https-cert': path
+                , 'https-key': path
                 }
   , shortHand = { verbose: ['--loglevel', 'verbose']
                 , h: ['--help']
@@ -34,6 +37,9 @@ var fs = require('fs')
                 , k: ['--session-key']
                 , key: ['--session-key']
                 , s: ['--max-sockets']
+                , H: ['--https']
+                , c: ['--https-cert']
+                , K: ['--https-key']
                 }
   , parsed = nopt(knownOpts, shortHand)
 
