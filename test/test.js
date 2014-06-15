@@ -286,8 +286,8 @@ describe('dean', function() {
         })
       })
 
-      // circle doesn't currently support this out of the box
-      it.skip('should work with a unix domain socket', function(done) {
+      // circle now supports this
+      it('should work with a unix domain socket', function(done) {
         utils.redisClient({
           redis: {
             socket: '/tmp/redis.sock'
