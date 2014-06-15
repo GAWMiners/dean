@@ -9,7 +9,7 @@ dean - a sticky session load balancer
     -b, --bind-address <ip>     set bind address
     -w, --workers <count>       set number of workers
     -j, --json                  output in json
-    -k, --key <key>             set session key
+    -k, --session-key <key>     set session key
     --redis-db <number>         set the redis db
     --redis-host <host>         set the redis host
     --redis-port <port>         set the redis port
