@@ -35,7 +35,6 @@ describe('dean', function() {
       this.dean = Dean({
         key: 'connect.sid'
       , https: httpsOpts
-      , trace: require('jstrace')
       })
 
       var self = this
@@ -85,13 +84,6 @@ describe('dean', function() {
       this.timeout(10000)
       this.dean.listen(function() {
         var socket = ioc('https://localhost:'+this.dean.port, sioOpts)
-        socket.on('connect_error', function(err) {
-          console.log(err)
-        })
-
-        socket.on('reconnect_error', function(err) {
-          console.log(err)
-        })
         var self = this
         setTimeout(function() {
           socket.emit('here')
