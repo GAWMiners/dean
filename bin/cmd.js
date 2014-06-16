@@ -259,6 +259,7 @@ function removeDrone(args) {
     var port = +args[0]
     if (isNaN(port)) drone = args[0]
     else drone = '0.0.0.0:'+args[0]
+    log.info('removing drone', drone)
     client.publish('dean', JSON.stringify({
       command: 'remove'
     , drone: drone
