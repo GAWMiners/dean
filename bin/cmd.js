@@ -299,7 +299,7 @@ function showDrones() {
       console.log(JSON.stringify(drones))
       done()
     } else {
-      if (!drones.length) {
+      if (!Object.keys(drones).length) {
         log.info('[drones]', 'no drones registered')
         return done()
       }
